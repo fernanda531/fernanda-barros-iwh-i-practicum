@@ -3,8 +3,8 @@ extends layout
 block content
   .page-header
     h1 Time Tracking Dashboard
-    p.subtitle Showing your most recent time entries
-    a.btn.btn-primary(href="/update-cobj") + Add New Entry
+    p.subtitle Showing all entries sorted by latest task
+    a.btn.btn-primary(href="/update-cobj") + Add to this table
 
   if data && data.length > 0
     .table-wrapper

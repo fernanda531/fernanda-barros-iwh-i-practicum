@@ -2,20 +2,30 @@ extends layout
 
 block content
   .page-header
-    h1 Add Time Entry
+    h1 Update Custom Object Form | Integrating With HubSpot I Practicum
     p.subtitle Log a new time tracking record to HubSpot
 
   .card
     form(action="/update-cobj", method="POST")
+      .form-group
+        label(for="task") Task Name
+        input(type="string", id="task", name="task", required)
+        span.hint Enter the name of the task performed
+        
       .form-group
         label(for="hours_spent") Hours Spent
         input(type="number", id="hours_spent", name="hours_spent", placeholder="e.g. 5", min="0", step="0.25", required)
         span.hint Enter the number of hours worked
 
       .form-group
-        label(for="task") Task Name
-        input(type="string", id="task", name="task", required)
-        span.hint Enter the name of the task performed
+        label(for="billable_rate") Billable Rate ($)
+        input(type="number", id="billable_rate", name="billable_rate", placeholder="e.g. 75.00", min="0", step="0.01")
+        span.hint Hourly or project rate
+
+      .form-group
+        label(for="billable_amount") Billable Amount ($)
+        input(type="number", id="billable_amount", name="billable_amount", placeholder="e.g. 375.00", min="0", step="0.01")
+        span.hint Total amount to bill
 
       .form-actions
         a.btn.btn-secondary(href="/") Cancel

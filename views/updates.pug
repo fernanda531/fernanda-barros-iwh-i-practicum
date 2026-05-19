@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .page-header
+    h1 Add Time Entry
+    p.subtitle Log a new time tracking record to HubSpot
+
+  .card
+    form(action="/update-cobj", method="POST")
+      .form-group
+        label(for="task") Task Name
+        input(type="string", id="task", name="task", placeholder="e.g. Homepage Frontend Development", required)
+        span.hint Enter the task name
+
+      .form-group
+        label(for="time_logged") Date & Time
+        input(type="datetime-local", id="time_logged", name="time_logged", required)
+        span.hint When was this work performed?
+
+      .form-actions
+        a.btn.btn-secondary(href="/") Cancel
+        button.btn.btn-primary(type="submit") Add Entry

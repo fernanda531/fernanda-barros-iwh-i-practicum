@@ -9,10 +9,39 @@ app.use(express.json());
 
 // * Please DO NOT INCLUDE the private app access token in your repo. Don't do this practicum in your normal account.
 const PRIVATE_APP_ACCESS = '';
+const CUSTOM_OBJ_TYPE = '2-202933022';
+
+const hubspotHeaders = {
+    Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+    'Content-Type': 'application/json'
+};
 
 // TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
 
-// * Code for Route 1 goes here
+    app.get('/', async (req, res) => {
+    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_TYPE}/search`;
+
+    const searchBody = {
+        properties: ['task', 'billable_amount', 'billable_rate', 'time_logged'],
+        sorts: [{ propertyName: 'hs_createdate', direction: 'DESCENDING' }],
+        limit: 20
+    };
+
+    try {
+        const response = await axios.post(url, searchBody, { headers: hubspotHeaders });
+        const data = response.data.results;
+        res.render('homepage', {
+            title: 'Time Tracking | HubSpot Custom Objects',
+            data
+        });
+    } catch (error) {
+        console.error('Error fetching records:', error.response?.data || error.message);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Could not load time tracking records. Please check your HubSpot configuration.'
+        });
+    }
+});
 
 // TODO: ROUTE 2 - Create a new app.get route for the form to create or update new custom object data. Send this data along in the next route.
 
@@ -68,4 +97,4 @@ app.post('/update', async (req, res) => {
 
 
 // * Localhost
-app.listen(3000, () => console.log('Listening on http://localhost:3000'));
+app.listen(9000, () => console.log('Listening on http://localhost:3000'));

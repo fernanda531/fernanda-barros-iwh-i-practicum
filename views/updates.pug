@@ -8,14 +8,14 @@ block content
   .card
     form(action="/update-cobj", method="POST")
       .form-group
-        label(for="task") Task Name
-        input(type="string", id="task", name="task", placeholder="e.g. Homepage Frontend Development", required)
-        span.hint Enter the task name
+        label(for="hours_spent") Hours Spent
+        input(type="number", id="hours_spent", name="hours_spent", placeholder="e.g. 5", min="0", step="0.25", required)
+        span.hint Enter the number of hours worked
 
       .form-group
-        label(for="time_logged") Date & Time
-        input(type="datetime-local", id="time_logged", name="time_logged", required)
-        span.hint When was this work performed?
+        label(for="task") Task Name
+        input(type="string", id="task", name="task", required)
+        span.hint Enter the name of the task performed
 
       .form-actions
         a.btn.btn-secondary(href="/") Cancel

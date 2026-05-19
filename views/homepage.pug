@@ -19,8 +19,8 @@ block content
           each record in data
             tr
               td
-                if record.properties.time_logged
-                  | #{new Date(parseInt(record.properties.time_logged)).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                if record.properties.task
+                  | #{record.properties.task}
                 else
                   span.muted —
               td

@@ -18,17 +18,13 @@ const hubspotHeaders = {
 
 // TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
 
-    app.get('/', async (req, res) => {
-    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_TYPE}/search`;
-
-    const searchBody = {
-        properties: ['task', 'billable_amount', 'billable_rate', 'time_logged'],
-        sorts: [{ propertyName: 'hs_createdate', direction: 'DESCENDING' }],
-        limit: 20
-    };
+app.get('/', async (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_TYPE}?limit=100&properties=hours_spent,billable_amount,billable_rate,task`;
 
     try {
-        const response = await axios.post(url, searchBody, { headers: hubspotHeaders });
+        const response = await axios.get(url, { headers: hubspotHeaders });
         const data = response.data.results;
         res.render('homepage', {
             title: 'Time Tracking | HubSpot Custom Objects',
@@ -53,52 +49,29 @@ app.get('/update-cobj', (req, res) => {
 
 // TODO: ROUTE 3 - Create a new app.post route for the custom objects form to create or update your custom object data. Once executed, redirect the user to the homepage.
 
-// * Code for Route 3 goes here
+app.post('/update-cobj', async (req, res) => {
+    const { hours_spent, task } = req.body;
 
-/** 
-* * This is sample code to give you a reference for how you should structure your calls. 
-
-* * App.get sample
-app.get('/contacts', async (req, res) => {
-    const contacts = 'https://api.hubspot.com/crm/v3/objects/contacts';
-    const headers = {
-        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
-        'Content-Type': 'application/json'
-    }
-    try {
-        const resp = await axios.get(contacts, { headers });
-        const data = resp.data.results;
-        res.render('contacts', { title: 'Contacts | HubSpot APIs', data });      
-    } catch (error) {
-        console.error(error);
-    }
-});
-
-* * App.post sample
-app.post('/update', async (req, res) => {
-    const update = {
+    const newRecord = {
         properties: {
-            "favorite_book": req.body.newVal
+            hours_spent,
+            task
         }
-    }
-
-    const email = req.query.email;
-    const updateContact = `https://api.hubapi.com/crm/v3/objects/contacts/${email}?idProperty=email`;
-    const headers = {
-        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
-        'Content-Type': 'application/json'
     };
 
-    try { 
-        await axios.patch(updateContact, update, { headers } );
-        res.redirect('back');
-    } catch(err) {
-        console.error(err);
+    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_TYPE}`;
+
+    try {
+        await axios.post(url, newRecord, { headers: hubspotHeaders });
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error creating record:', error.response?.data || error.message);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Could not create the time tracking record. Please try again.'
+        });
     }
-
 });
-*/
-
 
 // * Localhost
 app.listen(9000, () => console.log('Listening on http://localhost:3000'));

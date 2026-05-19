@@ -16,16 +16,34 @@ const hubspotHeaders = {
     'Content-Type': 'application/json'
 };
 
+// Helper: fetch ALL records with pagination and sort by latest task created
+async function fetchAllRecords() {
+    const properties = 'hours_spent,billable_amount,billable_rate,task';
+    let allResults = [];
+    let after = undefined;
+
+    do {
+        const params = `limit=100&properties=${properties}${after ? `&after=${after}` : ''}`;
+        const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_TYPE}?${params}`;
+        const response = await axios.get(url, { headers: hubspotHeaders });
+
+        allResults = allResults.concat(response.data.results);
+        after = response.data.paging?.next?.after || null;
+    } while (after);
+
+    // Sort newest first
+    allResults.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return allResults;
+}
+
 // TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
 
 app.get('/', async (req, res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     res.set('Pragma', 'no-cache');
-    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_TYPE}?limit=100&properties=hours_spent,billable_amount,billable_rate,task`;
 
     try {
-        const response = await axios.get(url, { headers: hubspotHeaders });
-        const data = response.data.results;
+        const data = await fetchAllRecords();
         res.render('homepage', {
             title: 'Time Tracking | HubSpot Custom Objects',
             data
